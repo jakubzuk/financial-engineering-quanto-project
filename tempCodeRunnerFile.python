@@ -1,0 +1,57 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+def S_3(p):
+    """
+    Oblicza entropię Shannona dla rozkładu dwumianowego Bin(3, p).
+    S_3 = -sum(P_i * ln(P_i))
+    """
+    # Funkcja pomocnicza: x*ln(x) z zabezpieczeniem dla x=0 (granica = 0)
+    def safe_xlnx(x):
+        return np.where(x > 1e-15, x * np.log(x), 0.0)
+    
+    # Prawdopodobieństwa dla k=0,1,2,3 sukcesów w 3 próbach
+    P0 = (1 - p)**3
+    P1 = 3 * p * (1 - p)**2
+    P2 = 3 * p**2 * (1 - p)
+    P3 = p**3
+    
+    # Entropia (wzór z treści zadania)
+    entropy = -(safe_xlnx(P0) + safe_xlnx(P1) + safe_xlnx(P2) + safe_xlnx(P3))
+    return entropy
+
+# Generowanie danych
+p = np.linspace(0, 1, 1000)
+S = S_3(p)
+
+# Rysowanie wykresu
+plt.figure(figsize=(10, 6))
+plt.plot(p, S, 'b-', linewidth=2.5, label=r'$S_3(p)$')
+
+# Dodanie opcjonalnych elementów wizualnych
+plt.axhline(y=0, color='k', linewidth=0.5, alpha=0.3)
+plt.axvline(x=0, color='k', linewidth=0.5, alpha=0.3)
+plt.axvline(x=1, color='k', linewidth=0.5, alpha=0.3)
+
+# Opisy
+plt.xlabel('p', fontsize=13)
+plt.ylabel(r'$S_3(p)$', fontsize=13)
+plt.title('Entropia Shannona dla rozkładu dwumianowego $B(3, p)$', fontsize=14)
+plt.grid(True, alpha=0.3, linestyle='--')
+plt.legend(fontsize=11)
+
+# Ustawienie zakresów
+plt.xlim(0, 1)
+plt.ylim(0, max(S) * 1.1)
+
+# Dodanie adnotacji o maksimum (opcjonalne)
+p_max = 0.5  # Dla binominalnego maksimum entropii jest w p=0.5
+S_max = S_3(np.array([p_max]))[0]
+plt.plot(p_max, S_max, 'ro', markersize=8, label=f'Max ≈ {S_max:.3f} (p=0.5)')
+plt.legend()
+
+plt.tight_layout()
+plt.show()
+
+# Opcjonalnie: zapisanie wykresu
+# plt.savefig('entropy_S3.png', dpi=150, bbox_inches='tight')
